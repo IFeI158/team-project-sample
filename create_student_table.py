@@ -5,7 +5,7 @@ DB_CONFIG = {
     "user": "root",
     "password": "123",
     "charset": "utf8",
-    "database": "sampledb"
+    "database": "attenddb"
 }
 
 create_table_sql = """

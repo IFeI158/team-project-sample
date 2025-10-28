@@ -12,7 +12,7 @@ DB_CONFIG = {
     "host": "localhost",
     "user": "root",
     "password": "123",
-    "database": "sampledb",
+    "database": "attenddb",
     "charset": "utf8"
 }
 

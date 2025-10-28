@@ -19,7 +19,7 @@ def thread_task():
             print("⚠️ 디코딩 오류:", e)
 
 try:
-    ser = serial.Serial('COM3', 9600, timeout=2)
+    ser = serial.Serial('COM5', 9600, timeout=2)
     time.sleep(2)
     
 except:
@@ -35,8 +35,8 @@ my_thread.start()
 conn = mysql.connector.connect(
     host='localhost',
     user='root',
-    password='shcho8783@', # ← 실제 비밀번호로 변경
-    database='products'    # ← 실제 DB 이름으로 변경
+    password='123', # ← 실제 비밀번호로 변경
+    database='attenddb'    # ← 실제 DB 이름으로 변경
 )
 cursor = conn.cursor()
 
