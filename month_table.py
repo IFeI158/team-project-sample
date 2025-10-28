@@ -53,7 +53,7 @@ def move_daily_to_month(today_day):
             SET daily_score=%s,
                 total_score = total_score + %s
             WHERE day=%s AND name=%s AND hotspot_name=%s
-        """, (daily_score, daily_score, today_day, name, hotspot_name))
+        """, (daily_score, daily_score,today_day, name, hotspot_name))
     cursor.execute("UPDATE dailytb SET daily_score=0")  # 초기화
     conn.commit()
 

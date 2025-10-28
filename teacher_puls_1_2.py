@@ -14,7 +14,7 @@ def thread_task():
             if local_data:
                 decoded = local_data.decode('utf-8', errors='ignore')
                 read_data += decoded
-                print(decoded, end="")
+                
         except Exception as e:
             print("⚠️ 디코딩 오류:", e)
 
@@ -48,7 +48,7 @@ time.sleep(3)
 ssids = re.findall(r'\+CWLAP:\(\d+,"(.*?)"', read_data)
 
 for ssid in ssids:
-    print("-", ssid)
+    
     cursor.execute("SELECT id FROM dailytb WHERE hotspot_name = %s", (ssid,))
     result = cursor.fetchone()
 
