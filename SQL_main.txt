@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS monthtb (
 	day INT NOT NULL,
     hotspot_name VARCHAR(50) NOT NULL,
 	name VARCHAR(50) NOT NULL,
-	daily_score INT DEFAULT 0,
-    total_score INT DEFAULT 0,
+	daily_total INT DEFAULT 0,
+    month_total INT DEFAULT 0,
 	UNIQUE KEY u_hotspot_day (hotspot_name, day)
     );
