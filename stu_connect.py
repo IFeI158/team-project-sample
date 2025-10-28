@@ -5,7 +5,7 @@ config = dict(
     host = 'localhost',
     user = 'root',
     password = '000630',
-    database = 'sampledb',
+    database = 'attenddb',
     charset = 'utf8'
 )
 
@@ -18,7 +18,7 @@ class DB:
     
     # 값 추적
     def verify_list(self, id, hotspot):
-        sql = "SELECT COUNT(*) FROM students WHERE id=%s or hotspot=%s"
+        sql = "SELECT COUNT(*) FROM dailytb WHERE id=%s or hotspot=%s"
         with self.connect() as con:
             with con.cursor() as cur:
                 cur.execute(sql, (id, hotspot))
@@ -26,8 +26,8 @@ class DB:
                 return count == 1
 
     def find_list(self, id_or_hotspot):
-        sql_id = "SELECT * FROM students WHERE id=%s"
-        sql_name = "SELECT * FROM students WHERE hotspot=%s"
+        sql_id = "SELECT * FROM dailytb WHERE id=%s"
+        sql_name = "SELECT * FROM dailytb WHERE hotspot=%s"
         with self.connect() as con:
             with con.cursor() as cur:
                 try:
@@ -41,7 +41,7 @@ class DB:
     
     # 정렬 ( ID순 )
     def fetch_list_id(self):
-        sql = "SELECT * FROM students ORDER BY id"
+        sql = "SELECT * FROM dailytb ORDER BY id"
         with self.connect() as con:
             with con.cursor() as cur:
                 cur.execute(sql)
@@ -49,7 +49,7 @@ class DB:
 
     # 값 추가            
     def insert_list(self, name, hotspot):
-        sql = "INSERT INTO students (name, hotspot) VALUES (%s, %s)"
+        sql = "INSERT INTO dailytb (name, hotspot) VALUES (%s, %s)"
         with self.connect() as con:
             try:
                 with con.cursor() as cur:
@@ -62,7 +62,7 @@ class DB:
     
     # 값 수정
     def update_list(self, id, name=None, hotspot=None, nowEA=None):
-        sql_first = "UPDATE students SET "
+        sql_first = "UPDATE dailytb SET "
         sql_last = " WHERE id=%s"
 
         set_clauses = []
@@ -105,8 +105,8 @@ class DB:
     # 값 제거
     def delete_list(self, id_or_hotspot):
         acs = "set sql_safe_updates=0;"
-        sql_id = "DELETE FROM students WHERE id=%s"
-        sql_hotspot = "DELETE FROM students WHERE hotspot=%s"
+        sql_id = "DELETE FROM dailytb WHERE id=%s"
+        sql_hotspot = "DELETE FROM dailytb WHERE hotspot=%s"
         with self.connect() as con:
             try:
                 with con.cursor() as cur:

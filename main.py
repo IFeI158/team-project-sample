@@ -1,6 +1,7 @@
 import sys
 from PyQt5.QtWidgets import *
 from dbconnect import DB, config
+from stu_main import *
 from month_table import *
 
 class Window(QMainWindow):
@@ -15,9 +16,23 @@ class Window(QMainWindow):
         self.btn1 = QPushButton("시간표 관리")
         layout.addWidget(self.btn1)
         self.btn2 = QPushButton("학생 관리")
+        self.btn2.clicked.connect(self.stumain)
         layout.addWidget(self.btn2)
         self.btn3 = QPushButton("출결 관리")
+        self.btn3.clicked.connect(self.montable)
         layout.addWidget(self.btn3)
+
+    def stumain(self):
+        self.ins = SWindow()
+        self.ins.show()
+
+    def montable(self):
+        init_monthtb()           # 월 초기화
+        move_daily_to_month(now.day)   # 예시: 오늘(10월 28일) 점수 전송
+        self.ins = AttendanceTable()
+        self.ins.show()
+
+    
 
 # 메인 기능
 # 시간표 관리 : 시간표 조회, 추가/편집/삭제 QSpinbox "DEVICE CONTROL"

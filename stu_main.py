@@ -4,7 +4,7 @@ from stu_connect import DB, config
 from stu_CRUD import Ins_lists, Upd_lists, Dlt_lists
 
 
-class Window(QMainWindow):
+class SWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("학생 관리")
@@ -16,7 +16,7 @@ class Window(QMainWindow):
 
         form_box = QHBoxLayout()
         self.searchbar = QLineEdit()
-        form_box.addWidget(QLabel("학생 검색"))
+        form_box.addWidget(QLabel("핫스팟 검색"))
         self.searchbar.returnPressed.connect(self.search)
         form_box.addWidget(self.searchbar)
 
@@ -93,8 +93,8 @@ class Window(QMainWindow):
         self.dlt = Dlt_lists()
         self.dlt.show()
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    myWindow = Window()
-    myWindow.show()
-    app.exec_()
+# if __name__ == "stu_main":
+#    app = QApplication(sys.argv)
+#    myWindow = SWindow()
+#    myWindow.show()
+#    app.exec_()

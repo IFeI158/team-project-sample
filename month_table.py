@@ -34,7 +34,7 @@ def init_monthtb():
     for day in range(1, last_day + 1):
         weekday = datetime(year, month, day).weekday()
         if weekday < 5:  # 평일만
-            cursor.execute("SELECT name, hotspot_name FROM dailytb")
+            cursor.execute("SELECT name, hotspot FROM dailytb")
             for name, hotspot_name in cursor.fetchall():
                 cursor.execute("""
                     INSERT INTO monthtb (day, hotspot_name, name, daily_total, month_total)
@@ -46,7 +46,7 @@ def init_monthtb():
 # 하루 종료 시: dailytb -> monthtb 전송
 # --------------------------
 def move_daily_to_month(today_day):
-    cursor.execute("SELECT name, hotspot_name, daily_score FROM dailytb")
+    cursor.execute("SELECT name, hotspot, daily_score FROM dailytb")
     for name, hotspot_name, daily_score in cursor.fetchall():
         # 점수 변환 로직
         if 0 <= daily_score <= 3:
@@ -87,7 +87,7 @@ class AttendanceTable(QWidget):
     def load_data(self):
         # 이번 달 평일 리스트
         days = [day for day in range(1, last_day+1) if datetime(year, month, day).weekday() < 5]
-        columns = ["name", "hotspot_name"] + [str(d) for d in days] + ["total"]
+        columns = ["name", "hotspot"] + [str(d) for d in days] + ["total"]
         self.table.setColumnCount(len(columns))
         self.table.setHorizontalHeaderLabels(columns)
 
@@ -116,11 +116,11 @@ class AttendanceTable(QWidget):
 # --------------------------
 # 실행
 # --------------------------
-if __name__ == "__main__":
-    init_monthtb()           # 월 초기화
-    move_daily_to_month(now.day)   # 예시: 오늘(10월 28일) 점수 전송
+# if __name__ == "month_table":
+#    init_monthtb()           # 월 초기화
+#    move_daily_to_month(now.day)   # 예시: 오늘(10월 28일) 점수 전송
 
-    app = QApplication(sys.argv)
-    window = AttendanceTable()
-    window.show()
-    sys.exit(app.exec_())
+#    app = QApplication(sys.argv)
+#    window = AttendanceTable()
+#    window.show()
+#    sys.exit(app.exec_())
