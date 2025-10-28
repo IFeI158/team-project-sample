@@ -11,7 +11,7 @@ from PyQt5.QtCore import Qt
 DB_CONFIG = {
     "host": "localhost",
     "user": "root",
-    "password": "123",
+    "password": "000630",
     "database": "sampledb",
     "charset": "utf8"
 }
@@ -29,17 +29,16 @@ class StudentsTable(QWidget):
         self.input_name = QLineEdit()
         self.input_name.setPlaceholderText("이름 (추가용)")
 
+        self.input_hotspotname = QLineEdit()
+        self.input_hotspotname.setPlaceholderText("핫스팟 이름 (추가용)")
+
         self.btn_add = QPushButton("추가")
         self.btn_add.clicked.connect(self.add_student)
 
-        # 출석 체크 버튼
-        self.btn_attendance = QPushButton("1교시 출석 체크")
-        self.btn_attendance.clicked.connect(self.attendance_1col)
-
         form_layout.addWidget(QLabel("이름:"))
         form_layout.addWidget(self.input_name)
+        form_layout.addWidget(self.input_hotspotname)
         form_layout.addWidget(self.btn_add)
-        form_layout.addWidget(self.btn_attendance)
         layout.addLayout(form_layout)
 
         # 테이블

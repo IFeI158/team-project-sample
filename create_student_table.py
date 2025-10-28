@@ -3,7 +3,7 @@ import pymysql
 DB_CONFIG = {
     "host": "localhost",
     "user": "root",
-    "password": "123",
+    "password": "000630",
     "charset": "utf8",
     "database": "sampledb"
 }
@@ -12,15 +12,8 @@ create_table_sql = """
 CREATE TABLE IF NOT EXISTS students (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
-    `1` INT DEFAULT 0,
-    `2` INT DEFAULT 0,
-    `3` INT DEFAULT 0,
-    `4` INT DEFAULT 0,
-    `5` INT DEFAULT 0,
-    `6` INT DEFAULT 0,
-    `7` INT DEFAULT 0,
-    `8` INT DEFAULT 0,
-    total INT AS (`1`+`2`+`3`+`4`+`5`+`6`+`7`+`8`) STORED
+    hotspot VARCHAR(50) NOT NULL,
+    daily_score INT DEFAULT 0
 );
 """
 
