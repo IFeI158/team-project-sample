@@ -37,7 +37,7 @@ def init_monthtb():
             cursor.execute("SELECT name, hotspot_name FROM dailytb")
             for name, hotspot_name in cursor.fetchall():
                 cursor.execute("""
-                    INSERT INTO monthtb (day, hotspot_name, name, daily_score, total_score)
+                    INSERT INTO monthtb (day, hotspot_name, name, daily_total, month_total)
                     VALUES (%s, %s, %s, 0, 0)
                 """, (day, hotspot_name, name))
     conn.commit()
@@ -50,8 +50,8 @@ def move_daily_to_month(today_day):
     for name, hotspot_name, daily_score in cursor.fetchall():
         cursor.execute("""
             UPDATE monthtb
-            SET daily_score=%s,
-                total_score = total_score + %s
+            SET daily_total=%s,
+                month_total = month_total + %s
             WHERE day=%s AND name=%s AND hotspot_name=%s
         """, (daily_score, daily_score,today_day, name, hotspot_name))
     cursor.execute("UPDATE dailytb SET daily_score=0")  # 초기화
@@ -92,7 +92,7 @@ class AttendanceTable(QWidget):
             total = 0
             for col_idx, day in enumerate(days, start=2):
                 cursor.execute("""
-                    SELECT daily_score FROM monthtb
+                    SELECT daily_total FROM monthtb
                     WHERE name=%s AND hotspot_name=%s AND day=%s
                 """, (name, hotspot_name, day))
                 result = cursor.fetchone()
