@@ -1,0 +1,25 @@
+
+# SQL workspace에 복붙하고 실행!
+
+CREATE DATABASE IF NOT EXISTS attenddb
+    DEFAULT CHARACTER SET utf8mb4
+    COLLATE utf8mb4_unicode_ci;
+
+USE attenddb;
+
+CREATE TABLE IF NOT EXISTS dailytb (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL,
+    hotspot_name VARCHAR(50) unique NOT NULL,
+    daily_score INT DEFAULT 0
+    );
+
+CREATE TABLE IF NOT EXISTS monthtb (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	day INT NOT NULL,
+    hotspot_name VARCHAR(50) NOT NULL,
+	name VARCHAR(50) NOT NULL,
+	daily_score INT DEFAULT 0,
+    total_score INT DEFAULT 0,
+	UNIQUE KEY u_hotspot_day (hotspot_name, day)
+    );
