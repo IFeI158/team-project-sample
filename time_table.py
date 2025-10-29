@@ -120,8 +120,3 @@ class TimetableApp(QWidget):
                     conn.close()
             except NameError:
                 pass
-
-app = QApplication(sys.argv)
-w = TimetableApp()
-w.show()
-sys.exit(app.exec_())

@@ -3,17 +3,20 @@ from PyQt5.QtWidgets import *
 from dbconnect import DB, config
 from stu_main import *
 from month_table import *
+from time_table import TimetableApp
 
 class Window(QMainWindow):
     def __init__(self):
         super().__init__()
         self.db = DB(**config)
         self.setWindowTitle("관리자 모드")
+        self.timetable_window = None
 
         central = QWidget()
         self.setCentralWidget(central)
         layout = QVBoxLayout(central)
         self.btn1 = QPushButton("시간표 관리")
+        self.btn1.clicked.connect(self.open_timetable)
         layout.addWidget(self.btn1)
         self.btn2 = QPushButton("학생 관리")
         self.btn2.clicked.connect(self.stumain)
@@ -31,7 +34,13 @@ class Window(QMainWindow):
         move_daily_to_month(now.day)   # 예시: 오늘(10월 28일) 점수 전송
         self.ins = AttendanceTable()
         self.ins.show()
-
+    
+    def open_timetable(self):
+        if self.timetable_window is None:
+            self.timetable_window = TimetableApp()
+        self.timetable_window.show()
+        self.timetable_window.raise_()
+        self.timetable_window.activateWindow()
     
 
 # 메인 기능
