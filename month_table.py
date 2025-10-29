@@ -55,13 +55,14 @@ def move_daily_to_month(today_day):
         else:
             converted_score = 3
 
-        # 월간 테이블 업데이트
-        cursor.execute("""
-            UPDATE monthtb
-            SET daily_total = %s,
-                month_total = month_total + %s
-            WHERE day = %s AND name = %s AND hotspot_name = %s
-        """, (converted_score, converted_score, today_day, name, hotspot_name))
+    # 월간 테이블 업데이트
+    cursor.execute("""
+        UPDATE monthtb
+        SET daily_total = %s,
+        month_total = month_total + %s
+        WHERE day = %s AND name = %s AND hotspot_name = %s
+    """, (converted_score, converted_score, today_day, name, hotspot_name))
+    cursor.execute("UPDATE dailytb SET daily_score = 0")
     conn.commit()
 
 # 일일 점수 초기화

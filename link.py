@@ -4,6 +4,7 @@ from datetime import datetime
 import subprocess
 import os
 import sys
+from month_table import move_daily_to_month
 
 # teacher_puls_1_2.py 실행 함수
 def run_teacher_puls_1_2_task():
@@ -47,7 +48,7 @@ def check_schedule_and_run():
     """, (now, now))
 
     rows = cursor.fetchall()
-    
+
     for row in rows:
         start_time = str(row[0])[:5] if row[0] else None
         end_time   = str(row[1])[:5] if row[1] else None
@@ -66,9 +67,9 @@ def check_schedule_and_run():
             last_period = cursor.fetchone()[0]
 
             if current_period == last_period:
-                print("마지막 교시입니다. 집으로 꺼지세요! 😆")
-            else:
-                print("다음 수업 준비하세요~")
+                print("마지막 교시가 끝났습니다. 집으로 가세요! 😆\n시스템 정산 시작 ...")
+                move_daily_to_month(datetime.now().day)
+
 
 
     cursor.close()
