@@ -93,8 +93,8 @@ class SWindow(QMainWindow):
         self.dlt = Dlt_lists()
         self.dlt.show()
 
-if __name__ == "stu_main":
-    app = QApplication(sys.argv)
-    myWindow = SWindow()
-    myWindow.show()
-    app.exec_()
+#if __name__ == "stu_main":
+#    app = QApplication(sys.argv)
+#    myWindow = SWindow()
+#    myWindow.show()
+#    app.exec_()
