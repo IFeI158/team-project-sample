@@ -1,4 +1,3 @@
-
 import pymysql
 
 config = dict(
@@ -79,10 +78,6 @@ class DB:
         if hotspot:
             set_clauses.append("hotspot=%s")
             values.append(hotspot)
-
-        if nowEA is not None:  # spinbox는 숫자니까 None 체크
-            set_clauses.append("nowEA=%s")
-            values.append(nowEA)
 
         if not set_clauses:  # 바꿀 게 없으면 종료
             return False

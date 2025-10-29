@@ -35,7 +35,7 @@ def ins_monthtb():
                    WHERE NOT EXISTS (
                    SELECT 1 FROM monthtb WHERE day=%s AND hotspot_name=dailytb.hotspot
                     )
-                """, (day, hotspot_name, name))
+                """, (day, day))
     conn.commit()
 
 # --------------------------
