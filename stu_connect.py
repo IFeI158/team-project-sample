@@ -16,6 +16,10 @@ class DB:
     def connect(self):
         return pymysql.connect(**self.config)
     
+    def cursor(self):
+        conn = self.connect()
+        return conn, conn.cursor()
+    
     # 값 추적
     def verify_list(self, id, hotspot):
         sql = "SELECT COUNT(*) FROM dailytb WHERE id=%s or hotspot=%s"
