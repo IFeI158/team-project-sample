@@ -10,10 +10,9 @@ USE attenddb;
 CREATE TABLE IF NOT EXISTS dailytb (
     id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(50) NOT NULL,
-    hotspot_name VARCHAR(50) UNIQUE NOT NULL,
-    daily_score INT DEFAULT 0,
-    last_reset_date DATE
-);
+    hotspot VARCHAR(50) UNIQUE NOT NULL,
+    daily_score INT DEFAULT 0
+    );
 
 CREATE TABLE IF NOT EXISTS monthtb (
 	id INT PRIMARY KEY AUTO_INCREMENT,

@@ -1,14 +1,18 @@
 import calendar
 from datetime import datetime
-from PyQt5.QtWidgets import QPushButton, QTableWidget, QTableWidgetItem, QWidget, QVBoxLayout
-from stu_connect import DB, config
+import pymysql
+from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QWidget, QVBoxLayout
 
 # --------------------------
 # MySQL 연결
 # --------------------------
-
-db = DB(**config)
-conn = db.connect()
+conn = pymysql.connect(
+    host='localhost',
+    user='root',
+    password='000630',
+    database='attenddb',
+    charset='utf8mb4'
+)
 cursor = conn.cursor()
 
 # --------------------------
@@ -20,29 +24,21 @@ month = now.month
 _, last_day = calendar.monthrange(year, month)
 
 # --------------------------
-# monthtb 오늘날에 추가 (평일만, daily_total = 0)
+# monthtb 생성 (평일만, daily_score = 0)
 # --------------------------
-def ins_monthtb():
+def init_monthtb():
+    # 기존 데이터 삭제
+    cursor.execute("DELETE FROM monthtb;")
+
     for day in range(1, last_day + 1):
         weekday = datetime(year, month, day).weekday()
         if weekday < 5:  # 평일만
             cursor.execute("SELECT name, hotspot FROM dailytb")
             for name, hotspot_name in cursor.fetchall():
                 cursor.execute("""
-                   INSERT INTO monthtb (day, hotspot_name, name, daily_total, month_total)
-                   SELECT %s, hotspot, name, 0, 0
-                   FROM dailytb
-                   WHERE NOT EXISTS (
-                   SELECT 1 FROM monthtb WHERE day=%s AND hotspot_name=dailytb.hotspot
-                    )
-                """, (day, day))
-    conn.commit()
-
-# --------------------------
-# monthtb 초기화 ()
-# --------------------------
-def init_monthtb():
-    cursor.execute("DELETE FROM monthtb")
+                    INSERT INTO monthtb (day, hotspot_name, name, daily_total, month_total)
+                    VALUES (%s, %s, %s, 0, 0)
+                """, (day, hotspot_name, name))
     conn.commit()
 
 # --------------------------
@@ -82,8 +78,6 @@ class AttendanceTable(QWidget):
 
         layout = QVBoxLayout()
         self.table = QTableWidget()
-        initbtn = QPushButton("초기화")
-        initbtn.clicked.connect(init_monthtb)
         layout.addWidget(self.table)
         self.setLayout(layout)
 
@@ -92,7 +86,8 @@ class AttendanceTable(QWidget):
     def load_data(self):
         # 이번 달 평일 리스트
         days = [day for day in range(1, last_day+1) if datetime(year, month, day).weekday() < 5]
-        columns = ["name", "hotspot"] + [str(d) for d in days] + ["total"]
+        columns = ["name", "hotspot_name"] + [str(d) for d in days] + ["total"]
+#        columns = ["name", "hotspot"] + [str(d) for d in days] + ["total"]
         self.table.setColumnCount(len(columns))
         self.table.setHorizontalHeaderLabels(columns)
 

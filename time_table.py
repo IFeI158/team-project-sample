@@ -8,7 +8,8 @@ from PyQt5.QtWidgets import (
     QLabel, QSpinBox, QPushButton, QTableWidget, QTimeEdit, QMessageBox
 )
 from PyQt5.QtCore import QTime, QDateTime
-from teacher_puls_1_2 import *
+import mysql.connector
+# from teacher_puls_1_2 import *
 
 config = dict(
     host='localhost',

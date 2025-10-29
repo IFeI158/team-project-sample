@@ -1,4 +1,3 @@
-import sys
 from PyQt5.QtWidgets import *
 from stu_connect import DB, config
 from stu_CRUD import Ins_lists, Upd_lists, Dlt_lists
@@ -16,6 +15,7 @@ class SWindow(QMainWindow):
 
         form_box = QHBoxLayout()
         self.searchbar = QLineEdit()
+        form_box.addWidget(QLabel("학생 검색"))
         form_box.addWidget(QLabel("핫스팟 검색"))
         self.searchbar.returnPressed.connect(self.search)
         form_box.addWidget(self.searchbar)
@@ -88,12 +88,12 @@ class SWindow(QMainWindow):
     def upd_btn(self):
         self.upd = Upd_lists()
         self.upd.show()
-    
+
     def dlt_btn(self):
         self.dlt = Dlt_lists()
         self.dlt.show()
 
-#if __name__ == "stu_main":
+# if __name__ == "stu_main":
 #    app = QApplication(sys.argv)
 #    myWindow = SWindow()
 #    myWindow.show()

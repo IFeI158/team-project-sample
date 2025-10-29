@@ -30,7 +30,7 @@ class Window(QMainWindow):
         self.ins.show()
 
     def montable(self):
-        ins_monthtb()           # 월 초기화
+        init_monthtb()           # 월 초기화
         move_daily_to_month(now.day)   # 예시: 오늘(10월 29일) 점수 전송
         self.ins = AttendanceTable()
         self.ins.show()
@@ -46,6 +46,11 @@ class Window(QMainWindow):
 # 메인 기능
 # 시간표 관리 : 시간표 조회, 추가/편집/삭제 QSpinbox "DEVICE CONTROL"
 # 학생 관리 : 학생 목록 조회, 추가/편집/삭제, 출석현황 수정, 정산 "DEVICE CONTROL"
+
+# month_table.py 에서 day_to_month 라는 func. 거기서 daily_score 를 -> daily_total로 넘기면서, 초기화 0으로
+
+# 오늘 날짜를 가져와서 대조 -> 오늘이 아님(지남) -> 자동으로 daily_score 0으로 초기화 => 테이블에 오늘 날짜가 있음
+
 # 출결 관리 : 날짜별 출석 점수 조회, 편집 "+@"
 # 모듈화 : serial 연동 모듈, db 연동 모듈, 메인윈도우, 금일 출석체크, 출석 저널(월간), 저널(history)
 

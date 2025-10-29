@@ -14,11 +14,7 @@ class DB:
 
     def connect(self):
         return pymysql.connect(**self.config)
-    
-    def cursor(self):
-        conn = self.connect()
-        return conn, conn.cursor()
-    
+
     # 값 추적
     def verify_list(self, id, hotspot):
         sql = "SELECT COUNT(*) FROM dailytb WHERE id=%s or hotspot=%s"
@@ -41,7 +37,7 @@ class DB:
                     return cur.fetchall()
                 except Exception:
                     return False
-    
+
     # 정렬 ( ID순 )
     def fetch_list_id(self):
         sql = "SELECT * FROM dailytb ORDER BY id"
@@ -52,7 +48,7 @@ class DB:
 
     # 값 추가            
     def insert_list(self, name, hotspot):
-        sql = "INSERT INTO dailytb (name, hotspot, last_reset_date) VALUES (%s, %s, CURDATE())"
+        sql = "INSERT INTO dailytb (name, hotspot) VALUES (%s, %s)"
         with self.connect() as con:
             try:
                 with con.cursor() as cur:
@@ -62,7 +58,7 @@ class DB:
             except Exception:
                 con.rollback()
                 return False
-    
+
     # 값 수정
     def update_list(self, id, name=None, hotspot=None, nowEA=None):
         sql_first = "UPDATE dailytb SET "
@@ -78,6 +74,10 @@ class DB:
         if hotspot:
             set_clauses.append("hotspot=%s")
             values.append(hotspot)
+
+        if nowEA is not None:  # spinbox는 숫자니까 None 체크
+            set_clauses.append("nowEA=%s")
+            values.append(nowEA)
 
         if not set_clauses:  # 바꿀 게 없으면 종료
             return False
@@ -100,7 +100,7 @@ class DB:
                 print("오류 코드>", e)
                 con.rollback()
                 return False
-    
+
     # 값 제거
     def delete_list(self, id_or_hotspot):
         acs = "set sql_safe_updates=0;"
@@ -118,4 +118,3 @@ class DB:
                     return True
             except Exception:
                 con.rollback()
-                return False

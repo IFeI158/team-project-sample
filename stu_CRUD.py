@@ -15,8 +15,6 @@ class Ins_lists(QMainWindow):
 
         self.input_name = QLineEdit()
         self.input_hotspot = QLineEdit()
-        self.input_EA = QSpinBox()
-        self.input_EA.setRange(0,999)
 
         v_box.addWidget(QLabel("학생 이름"))
         v_box.addWidget(self.input_name)
@@ -37,7 +35,6 @@ class Ins_lists(QMainWindow):
             QMessageBox.information(self, "완료", "추가되었습니다.")
             self.input_name.clear()
             self.input_hotspot.clear()
-            self.input_EA.clear()
         else:
             QMessageBox.critical(self, "실패", "추가 중 오류가 발생하였습니다.")
 
