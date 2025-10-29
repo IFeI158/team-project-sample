@@ -47,7 +47,7 @@ def check_schedule_and_run():
     """, (now, now))
 
     rows = cursor.fetchall()
-
+    
     for row in rows:
         start_time = str(row[0])[:5] if row[0] else None
         end_time   = str(row[1])[:5] if row[1] else None
@@ -71,8 +71,8 @@ def check_schedule_and_run():
                 print("다음 수업 준비하세요~")
 
 
-        cursor.close()
-        conn.close()
+    cursor.close()
+    conn.close()
 
 # 메인 루프 (1분마다 체크)
 print("⏳ 자동 실행 스케줄러 시작... (60초 간격 체크)")
