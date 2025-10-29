@@ -1,10 +1,9 @@
-
 import pymysql
 
 config = dict(
     host = 'localhost',
     user = 'root',
-    password = '123',
+    password = '000630',
     database = 'attenddb',
     charset = 'utf8'
 )
@@ -15,6 +14,10 @@ class DB:
 
     def connect(self):
         return pymysql.connect(**self.config)
+    
+    def cursor(self):
+        conn = self.connect()
+        return conn, conn.cursor()
     
     # 값 추적
     def verify_list(self, id, hotspot):
@@ -49,7 +52,7 @@ class DB:
 
     # 값 추가            
     def insert_list(self, name, hotspot):
-        sql = "INSERT INTO dailytb (name, hotspot) VALUES (%s, %s)"
+        sql = "INSERT INTO dailytb (name, hotspot, last_reset_date) VALUES (%s, %s, CURDATE())"
         with self.connect() as con:
             try:
                 with con.cursor() as cur:
@@ -75,10 +78,6 @@ class DB:
         if hotspot:
             set_clauses.append("hotspot=%s")
             values.append(hotspot)
-
-        if nowEA is not None:  # spinbox는 숫자니까 None 체크
-            set_clauses.append("nowEA=%s")
-            values.append(nowEA)
 
         if not set_clauses:  # 바꿀 게 없으면 종료
             return False

@@ -1,19 +1,14 @@
-import sys
 import calendar
 from datetime import datetime
-import pymysql
-from PyQt5.QtWidgets import QApplication, QTableWidget, QTableWidgetItem, QWidget, QVBoxLayout
+from PyQt5.QtWidgets import QPushButton, QTableWidget, QTableWidgetItem, QWidget, QVBoxLayout
+from stu_connect import DB, config
 
 # --------------------------
 # MySQL 연결
 # --------------------------
-conn = pymysql.connect(
-    host='localhost',
-    user='root',
-    password='123',
-    database='attenddb',
-    charset='utf8mb4'
-)
+
+db = DB(**config)
+conn = db.connect()
 cursor = conn.cursor()
 
 # --------------------------
@@ -25,21 +20,29 @@ month = now.month
 _, last_day = calendar.monthrange(year, month)
 
 # --------------------------
-# monthtb 생성 (평일만, daily_score = 0)
+# monthtb 오늘날에 추가 (평일만, daily_total = 0)
 # --------------------------
-def init_monthtb():
-    # 기존 데이터 삭제
-    cursor.execute("DELETE FROM monthtb;")
-    
+def ins_monthtb():
     for day in range(1, last_day + 1):
         weekday = datetime(year, month, day).weekday()
         if weekday < 5:  # 평일만
             cursor.execute("SELECT name, hotspot FROM dailytb")
             for name, hotspot_name in cursor.fetchall():
                 cursor.execute("""
-                    INSERT INTO monthtb (day, hotspot_name, name, daily_total, month_total)
-                    VALUES (%s, %s, %s, 0, 0)
-                """, (day, hotspot_name, name))
+                   INSERT INTO monthtb (day, hotspot_name, name, daily_total, month_total)
+                   SELECT %s, hotspot, name, 0, 0
+                   FROM dailytb
+                   WHERE NOT EXISTS (
+                   SELECT 1 FROM monthtb WHERE day=%s AND hotspot_name=dailytb.hotspot
+                    )
+                """, (day, day))
+    conn.commit()
+
+# --------------------------
+# monthtb 초기화 ()
+# --------------------------
+def init_monthtb():
+    cursor.execute("DELETE FROM monthtb")
     conn.commit()
 
 # --------------------------
@@ -79,6 +82,8 @@ class AttendanceTable(QWidget):
 
         layout = QVBoxLayout()
         self.table = QTableWidget()
+        initbtn = QPushButton("초기화")
+        initbtn.clicked.connect(init_monthtb)
         layout.addWidget(self.table)
         self.setLayout(layout)
 

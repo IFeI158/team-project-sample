@@ -37,7 +37,7 @@ my_thread.start()
 conn = mysql.connector.connect(
     host='localhost',
     user='root',
-    password='shcho8783@', # ← 실제 비밀번호로 변경
+    password='000630', # ← 실제 비밀번호로 변경
     database='products'    # ← 실제 DB 이름으로 변경
 )
 cursor = conn.cursor()

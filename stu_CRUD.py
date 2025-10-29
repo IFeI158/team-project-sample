@@ -125,4 +125,4 @@ class Dlt_lists(QMainWindow):
             else:
                 QMessageBox.critical(self, "실패", "오류가 발생하였습니다.")
         else:
-            QMessageBox.critical(self, "실패", "존재하지 않는 상품입니다.")
+            QMessageBox.critical(self, "실패", "존재하지 않는 데이터입니다.")

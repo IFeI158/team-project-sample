@@ -1,22 +1,19 @@
 # 일일 시간표 관리 시스템
-
 # 원하는 교시수를 선택 후 그 수에 맞는 표 db 생성
-
 # 각 칸에 원하는 시간을 입력 및 db에 저장
 
-
 import sys
-import mysql.connector
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout,
     QLabel, QSpinBox, QPushButton, QTableWidget, QTimeEdit, QMessageBox
 )
 from PyQt5.QtCore import QTime, QDateTime
+from teacher_puls_1_2 import *
 
 config = dict(
     host='localhost',
     user='root',
-    password='123',
+    password='000630',
     database='attenddb',
     charset='utf8'
 )

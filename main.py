@@ -30,8 +30,8 @@ class Window(QMainWindow):
         self.ins.show()
 
     def montable(self):
-        init_monthtb()           # 월 초기화
-        move_daily_to_month(now.day)   # 예시: 오늘(10월 28일) 점수 전송
+        ins_monthtb()           # 월 초기화
+        move_daily_to_month(now.day)   # 예시: 오늘(10월 29일) 점수 전송
         self.ins = AttendanceTable()
         self.ins.show()
     
