@@ -53,8 +53,7 @@ for ssid in ssids:
     result = cursor.fetchone()
 
     if result:
-        cursor.execute("UPDATE dailytb SET daily_score = daily_score + 1 WHERE hotspot = %s", (ssid,))
-        print(f"SSID '{ssid}' 존재 → daily_score 증가")
+        print(f"SSID '{ssid}' 존재 → 종침")
     else:
         print(f"SSID '{ssid}' 없음 → 업데이트 생략")
 
@@ -63,8 +62,3 @@ conn.commit()
 ser.write(b'stop\n')
 print("stop 명령 전송됨")
 time.sleep(2)
-
-cursor.close()
-conn.close()
-ser.close()
-print("✅ 모든 작업 완료")

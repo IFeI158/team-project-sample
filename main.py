@@ -1,6 +1,5 @@
 import sys
 from PyQt5.QtWidgets import *
-from dbconnect import DB, config
 from stu_main import *
 from month_table import *
 from time_table import TimetableApp

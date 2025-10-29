@@ -27,7 +27,7 @@ _, last_day = calendar.monthrange(year, month)
 # monthtb 생성 (평일만, daily_score = 0)
 # --------------------------
 def init_monthtb():
-    # 기존 데이터 삭제
+    # 기존 데이터 삭제 및 이번달 평일만 추려내어 새 표 생성(새로운 달 생성 시 이용)
     cursor.execute("DELETE FROM monthtb;")
 
     for day in range(1, last_day + 1):
@@ -62,10 +62,14 @@ def move_daily_to_month(today_day):
                 month_total = month_total + %s
             WHERE day = %s AND name = %s AND hotspot_name = %s
         """, (converted_score, converted_score, today_day, name, hotspot_name))
-
-    # 일일 점수 초기화
-    #cursor.execute("UPDATE dailytb SET daily_score = 0")
     conn.commit()
+
+# 일일 점수 초기화
+def init_daily_score(endclass):
+
+    endclass
+
+    cursor.execute("UPDATE dailytb SET daily_score = 0")
 
 # --------------------------
 # PyQt5 GUI
