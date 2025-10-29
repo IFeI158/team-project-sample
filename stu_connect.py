@@ -53,7 +53,7 @@ class DB:
 
     # 값 추가            
     def insert_list(self, name, hotspot):
-        sql = "INSERT INTO dailytb (name, hotspot) VALUES (%s, %s)"
+        sql = "INSERT INTO dailytb (name, hotspot, last_reset_date) VALUES (%s, %s, CURDATE())"
         with self.connect() as con:
             try:
                 with con.cursor() as cur:
