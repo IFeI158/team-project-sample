@@ -3,8 +3,10 @@ import time
 import threading
 import re
 import mysql.connector
+from datetime import date
 
 read_data = ""
+today = date.today()
 
 def thread_task():
     global read_data
@@ -19,7 +21,7 @@ def thread_task():
             print("⚠️ 디코딩 오류:", e)
 
 try:
-    ser = serial.Serial('COM5', 9600, timeout=2)
+    ser = serial.Serial('COM3', 9600, timeout=2) #포트 확인
     time.sleep(2)
     
 except:
@@ -35,8 +37,8 @@ my_thread.start()
 conn = mysql.connector.connect(
     host='localhost',
     user='root',
-    password='123', # ← 실제 비밀번호로 변경
-    database='attenddb'    # ← 실제 DB 이름으로 변경
+    password='shcho8783@', # ← 실제 비밀번호로 변경
+    database='products'    # ← 실제 DB 이름으로 변경
 )
 cursor = conn.cursor()
 
@@ -59,6 +61,20 @@ for ssid in ssids:
         print(f"SSID '{ssid}' 없음 → 업데이트 생략")
 
 conn.commit()
+
+# 오늘 날짜
+today = date.today()
+
+# 날짜 비교 및 초기화
+cursor.execute("SELECT MAX(last_reset_date) FROM dailytb")
+last_reset = cursor.fetchone()[0]
+
+if last_reset != today:
+    cursor.execute("UPDATE dailytb SET daily_score = 0, last_reset_date = %s", (today,))
+    print("날짜 변경 감지 → daily_score 초기화 완료")
+else:
+    print("오늘 이미 초기화됨 → 초기화 생략")
+
 
 ser.write(b'stop\n')
 print("stop 명령 전송됨")

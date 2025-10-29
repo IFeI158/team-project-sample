@@ -8,11 +8,12 @@ CREATE DATABASE IF NOT EXISTS attenddb
 USE attenddb;
 
 CREATE TABLE IF NOT EXISTS dailytb (
-	id INT PRIMARY KEY AUTO_INCREMENT,
+    id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(50) NOT NULL,
-    hotspot VARCHAR(50) unique NOT NULL,
-    daily_score INT DEFAULT 0
-    );
+    hotspot_name VARCHAR(50) UNIQUE NOT NULL,
+    daily_score INT DEFAULT 0,
+    last_reset_date DATE
+);
 
 CREATE TABLE IF NOT EXISTS monthtb (
 	id INT PRIMARY KEY AUTO_INCREMENT,
