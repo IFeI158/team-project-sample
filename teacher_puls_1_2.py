@@ -2,7 +2,7 @@ import serial
 import time
 import threading
 import re
-import mysql.connector
+import pymysql
 
 read_data = ""
 
@@ -19,7 +19,7 @@ def thread_task():
             print("⚠️ 디코딩 오류:", e)
 
 try:
-    ser = serial.Serial('COM3', 9600, timeout=2) #포트 확인
+    ser = serial.Serial('COM5', 9600, timeout=2) #포트 확인
     time.sleep(2)
     
 except:
@@ -32,11 +32,11 @@ my_thread.daemon = True
 my_thread.start()
 
 
-conn = mysql.connector.connect(
+conn = pymysql.connect(
     host='localhost',
     user='root',
-    password='000630', # ← 실제 비밀번호로 변경
-    database='products'    # ← 실제 DB 이름으로 변경
+    password='123', # ← 실제 비밀번호로 변경
+    database='attenddb'    # ← 실제 DB 이름으로 변경
 )
 cursor = conn.cursor()
 
@@ -49,11 +49,11 @@ ssids = re.findall(r'\+CWLAP:\(\d+,"(.*?)"', read_data)
 
 for ssid in ssids:
     
-    cursor.execute("SELECT id FROM dailytb WHERE hotspot_name = %s", (ssid,))
+    cursor.execute("SELECT id FROM dailytb WHERE hotspot = %s", (ssid,))
     result = cursor.fetchone()
 
     if result:
-        cursor.execute("UPDATE dailytb SET daily_score = daily_score + 1 WHERE hotspot_name = %s", (ssid,))
+        cursor.execute("UPDATE dailytb SET daily_score = daily_score + 1 WHERE hotspot = %s", (ssid,))
         print(f"SSID '{ssid}' 존재 → daily_score 증가")
     else:
         print(f"SSID '{ssid}' 없음 → 업데이트 생략")
