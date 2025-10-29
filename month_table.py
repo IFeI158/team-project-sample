@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import QApplication, QTableWidget, QTableWidgetItem, QWidge
 conn = pymysql.connect(
     host='localhost',
     user='root',
-    password='000630',
+    password='123',
     database='attenddb',
     charset='utf8mb4'
 )
