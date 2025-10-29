@@ -6,10 +6,20 @@ from stu_connect import DB, config
 # --------------------------
 # MySQL 연결
 # --------------------------
+<<<<<<< HEAD
 from stu_connect import DB, config
 
 db = DB(**config)
 conn = db.connect()
+=======
+conn = pymysql.connect(
+    host='localhost',
+    user='root',
+    password='123',
+    database='attenddb',
+    charset='utf8mb4'
+)
+>>>>>>> c6b7121d4161d47d9da18cba8574be23b5add06b
 cursor = conn.cursor()
 
 # --------------------------

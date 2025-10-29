@@ -11,7 +11,7 @@ from PyQt5.QtCore import Qt
 DB_CONFIG = {
     "host": "localhost",
     "user": "root",
-    "password": "000630",
+    "password": "123",
     "database": "sampledb",
     "charset": "utf8"
 }

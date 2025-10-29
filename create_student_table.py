@@ -3,7 +3,7 @@ import pymysql
 DB_CONFIG = {
     "host": "localhost",
     "user": "root",
-    "password": "000630",
+    "password": "123",
     "charset": "utf8",
     "database": "attenddb"
 }
