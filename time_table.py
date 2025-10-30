@@ -11,7 +11,7 @@ import pymysql
 config = dict(
     host='localhost',
     user='root',
-    password='123',
+    password='000630',
     database='attenddb',
     charset='utf8'
 )
@@ -29,7 +29,6 @@ class TimetableApp(QWidget):
         row_box.addWidget(QLabel("교시 수:"))
         self.spin = QSpinBox()
         self.spin.setRange(1, 9)
-        self.spin.setValue(5)
         row_box.addWidget(self.spin)
 
         self.btn_apply = QPushButton("표 생성")

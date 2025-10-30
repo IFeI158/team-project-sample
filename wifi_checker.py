@@ -15,7 +15,7 @@ class WifiChecker:
         self.db_config = db_config or {
             'host': 'localhost',
             'user': 'root',
-            'password': '123',
+            'password': '000630',
             'database': 'attenddb'
         }
 

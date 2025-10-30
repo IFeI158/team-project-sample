@@ -65,7 +65,16 @@ def move_daily_to_month(today_day):
     cursor.execute("UPDATE dailytb SET daily_score = 0")
     conn.commit()
 
+<<<<<<< HEAD
 
+=======
+# 일일 점수 초기화
+def init_daily_score(endclass):
+
+    endclass
+
+    cursor.execute("UPDATE dailytb SET daily_score = 0")
+>>>>>>> 7c4d5ab3504bc7a8af07923865150bf45a8443a1
 
 # --------------------------
 # PyQt5 GUI
