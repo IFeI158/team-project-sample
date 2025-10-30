@@ -15,14 +15,9 @@ class SWindow(QMainWindow):
 
         form_box = QHBoxLayout()
         self.searchbar = QLineEdit()
-        form_box.addWidget(QLabel("학생 검색"))
         form_box.addWidget(QLabel("핫스팟 검색"))
         self.searchbar.returnPressed.connect(self.search)
         form_box.addWidget(self.searchbar)
-
-        self.btn_ld = QPushButton("새로고침")
-        self.btn_ld.clicked.connect(self.load_lists)
-        form_box.addWidget(self.btn_ld)
 
         # self.btn_upd = QPushButton("학생 수정")
         # self.btn_upd.clicked.connect(self.upd_btn)
@@ -63,6 +58,7 @@ class SWindow(QMainWindow):
     def search(self):
         inputval = self.searchbar.text().strip()
         if not inputval:  # None 대신 공백 체크
+            self.load_lists()
             return
         try:
             result = self.db.find_list(inputval)  # fetchall → 리스트[튜플]
@@ -83,14 +79,17 @@ class SWindow(QMainWindow):
 
     def ins_btn(self):
         self.ins = Ins_lists()
+        self.ins.data_changed_i.connect(self.load_lists)  # ✅ 신호 연결
         self.ins.show()
 
     def upd_btn(self):
         self.upd = Upd_lists()
+        self.upd.data_changed_u.connect(self.load_lists)  # ✅ 신호 연결
         self.upd.show()
 
     def dlt_btn(self):
         self.dlt = Dlt_lists()
+        self.dlt.data_changed_d.connect(self.load_lists)  # ✅ 신호 연결
         self.dlt.show()
 
 # if __name__ == "stu_main":

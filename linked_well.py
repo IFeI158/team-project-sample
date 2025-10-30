@@ -84,7 +84,6 @@ def check_schedule_and_run():
                 move_daily_to_month(1)
                 print("시스템 정산 완료")
                 sys.exit()
-            
 
     cursor.close()
     conn.close()

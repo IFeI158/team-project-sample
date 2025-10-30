@@ -1,4 +1,5 @@
 import pymysql
+from month_table import sync_delete_student
 
 config = dict(
     host = 'localhost',
@@ -60,7 +61,7 @@ class DB:
                 return False
 
     # 값 수정
-    def update_list(self, id, name=None, hotspot=None, nowEA=None):
+    def update_list(self, id, name=None, hotspot=None):
         sql_first = "UPDATE dailytb SET "
         sql_last = " WHERE id=%s"
 
@@ -74,10 +75,6 @@ class DB:
         if hotspot:
             set_clauses.append("hotspot=%s")
             values.append(hotspot)
-
-        if nowEA is not None:  # spinbox는 숫자니까 None 체크
-            set_clauses.append("nowEA=%s")
-            values.append(nowEA)
 
         if not set_clauses:  # 바꿀 게 없으면 종료
             return False
@@ -101,20 +98,27 @@ class DB:
                 con.rollback()
                 return False
 
-    # 값 제거
     def delete_list(self, id_or_hotspot):
-        acs = "set sql_safe_updates=0;"
         sql_id = "DELETE FROM dailytb WHERE id=%s"
+        sql_id_to_hotspot = "SELECT hotspot FROM dailytb WHERE id=%s"
         sql_hotspot = "DELETE FROM dailytb WHERE hotspot=%s"
+
         with self.connect() as con:
             try:
                 with con.cursor() as cur:
-                    cur.execute(acs)
                     if id_or_hotspot.isdigit():
-                        cur.execute(sql_id, int(id_or_hotspot))
+                        cur.execute(sql_id_to_hotspot, (int(id_or_hotspot),))
+                        hotspot_from_id = cur.fetchone()
+                        if hotspot_from_id:
+                            hotspot_from_id = hotspot_from_id[0]
+                            sync_delete_student(hotspot_from_id)
+                        cur.execute(sql_id, (int(id_or_hotspot),))
                     else:
-                        cur.execute(sql_hotspot, id_or_hotspot)
+                        cur.execute(sql_hotspot, (id_or_hotspot,))
+                        sync_delete_student(id_or_hotspot)
                     con.commit()
                     return True
-            except Exception:
+            except Exception as e:
                 con.rollback()
+                print("삭제 오류:", e)
+                return False

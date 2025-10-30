@@ -18,11 +18,11 @@ config = dict(
 
 class TimetableApp(QWidget):
     updated = pyqtSignal()
-
     def __init__(self):
         super().__init__()
         self.setWindowTitle("일일 시간표 관리")
         self.resize(400, 500)
+
         self.layout = QVBoxLayout(self)
 
         # 교시 선택
@@ -97,13 +97,39 @@ class TimetableApp(QWidget):
             # 기존 데이터 삭제
             cur.execute("DELETE FROM timetable")
 
-            # 삽입
+            # 시간표 데이터 수집
+            times = []
             for r in range(self.table.rowCount()):
-                start = self.table.cellWidget(r, 0).time().toString("HH:mm:ss")
-                end = self.table.cellWidget(r, 1).time().toString("HH:mm:ss")
+                start_widget = self.table.cellWidget(r, 0)
+                end_widget = self.table.cellWidget(r, 1)
+                start_time = start_widget.time()
+                end_time = end_widget.time()
+
+                # 시작과 종료 시간이 같으면 오류
+                if start_time == end_time:
+                    QMessageBox.warning(self, "시간 오류", f"{r+1}교시의 시작과 종료 시간이 같습니다.")
+                    return
+
+                times.append((r+1, start_time, end_time))
+
+            # 교시 간 시간 겹침 검사
+            for i in range(len(times) - 1):
+                prev_period, prev_start, prev_end = times[i]
+                next_period, next_start, next_end = times[i+1]
+
+                if prev_end == next_start:
+                    QMessageBox.warning(self, "시간 겹침 오류", f"{prev_period}교시 종료 시간과 {next_period}교시 시작 시간이 같습니다.")
+                    return
+
+                if prev_start == next_start:
+                    QMessageBox.warning(self, "시작 시간 중복 오류", f"{prev_period}교시와 {next_period}교시의 시작 시간이 같습니다.")
+                    return
+
+            # DB에 저장
+            for period, start, end in times:
                 cur.execute(
                     "INSERT INTO timetable (period, start_time, end_time) VALUES (%s, %s, %s)",
-                    (r+1, start, end)
+                    (period, start.toString("HH:mm:ss"), end.toString("HH:mm:ss"))
                 )
             conn.commit()
             QMessageBox.information(self, "저장 완료", "DB에 저장되었습니다.")
