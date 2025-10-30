@@ -7,6 +7,31 @@ SoftwareSerial espSerial(2, 3); // RX, TX
 
 int buzzer = 11;
 
+// 🎵 두 번째 코드 멜로디 & 박자
+int melody[] = {
+  262, 392, 523, 659, 784, 1047, 1319,
+  1175, 1175, 1047, 1047, 988, 880, 880,
+  196, 247, 294, 392, 494, 587, 988,
+  880, 880, 784, 784, 698, 659, 659,
+  262, 392, 523, 659, 784, 1047, 1319,
+  1175, 1175, 1047, 1047, 988, 880, 880,
+  196, 247, 294, 349, 494, 587,
+  262, 330, 392, 523, 659, 784,
+  392, 440, 392, 349, 392, 659, 587, 523
+};
+
+int noteDurations[] = {
+  300,200,200,300,200,200,450,
+  100,300,100,300,200,100,350,
+  300,200,200,300,200,200,450,
+  100,300,100,300,200,100,350,
+  300,200,200,300,200,200,450,
+  100,300,100,300,200,100,350,
+  200,200,200,200,200,200,
+  200,200,200,200,200,200,
+  250,100,150,100,150,350,100,500
+};
+
 void setup() {
   pinMode(buzzer, OUTPUT);
   Serial.begin(9600);
@@ -19,7 +44,7 @@ void loop() {
 
     if(cmd == "stop"){
       Serial.println("stop을 누르셨습니다!");
-      playMelody();
+      playMelody();  // ✅ melody 배열 기반 재생
     }else{
       espSerial.println(cmd);
     }
@@ -29,35 +54,16 @@ void loop() {
     String resp = espSerial.readStringUntil('\n');
     Serial.println(resp);
   }
-
-  // if (Serial.available() > 0) {
-  //   char cmd = Serial.read();
-  //   if (cmd == 'P') { // Python에서 'P' 보내면 재생
-  //     playMelody();}}
 }
 
-
+// 🎵 melody 배열과 noteDurations 배열 기반 재생
 void playMelody() {
-  // 🎵 미 도 레 솔
-  tone(buzzer, 659, 500); // 미 (E5)
-  delay(550);
-  tone(buzzer, 523, 500); // 도 (C5)
-  delay(550);
-  tone(buzzer, 587, 500); // 레 (D5)
-  delay(550);
-  tone(buzzer, 392, 800); // 낮은 솔 (G4)
-  delay(1000);
+  int length = sizeof(melody)/sizeof(int);
 
-  // 🎵 솔 레 미 도
-  tone(buzzer, 392, 500); // 낮은 솔 (G4)
-  delay(550);
-  tone(buzzer, 587, 500); // 레 (D5)
-  delay(550);
-  tone(buzzer, 659, 500); // 미 (E5)
-  delay(550);
-  tone(buzzer, 523, 800); // 도 (C5)
-  delay(900);
-
-  noTone(buzzer);
+  for (int i = 0; i < length; i++) {
+    tone(buzzer, melody[i], noteDurations[i]);
+    delay(noteDurations[i] + 50); // 각 음 사이 약간 여유
+  }
+  noTone(buzzer); // 재생 종료
 }
 
