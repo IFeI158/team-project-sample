@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import QTime, QDateTime, pyqtSignal
 import pymysql
+from PyQt5.QtGui import *
 
 # DB 접속 정보
 config = dict(
@@ -22,6 +23,7 @@ class TimetableApp(QWidget):
         super().__init__()
         self.setWindowTitle("일일 시간표 관리")
         self.resize(400, 500)
+        self.setWindowIcon(QIcon("tik.png"))
 
         self.layout = QVBoxLayout(self)
 

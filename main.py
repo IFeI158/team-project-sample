@@ -4,6 +4,7 @@ from stu_main import *
 from month_table import *
 from time_table import TimetableApp
 from PyQt5.QtCore import QTime, QDateTime, pyqtSignal
+from PyQt5.QtGui import *
 import subprocess
 import os
 
@@ -26,8 +27,9 @@ def run_linked_well_task():
 class Window(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setGeometry(300, 300, 340, 400)
+        self.setGeometry(300, 300, 340, 370)
         self.setWindowTitle("관리자 모드")
+        self.setWindowIcon(QIcon("tik.png"))
         self.timetable_window = None
         
         #  메인 위젯 & 레이아웃
@@ -38,14 +40,62 @@ class Window(QMainWindow):
         #  버튼
         self.btn1 = QPushButton("시간표 관리")
         self.btn1.clicked.connect(self.open_timetable)
+        self.btn1.setStyleSheet("""
+            QPushButton {
+                border: 2px solid black; 
+                border-radius: 11px;
+                color: black;
+                font-weight: bold;
+                font-size: 16pt;
+                background-color: #FFC0CB;  /* 분홍 */
+            }
+            QPushButton:hover {
+                background-color: #FFD6E0;  /* 연분홍 */
+            }
+            QPushButton:pressed {
+                background-color: #FF69B4;  /* 진분홍 */
+            }
+        """)
         layout.addWidget(self.btn1)
 
         self.btn2 = QPushButton("학생 관리")
         self.btn2.clicked.connect(self.stumain)
+        self.btn2.setStyleSheet("""
+            QPushButton {
+                border: 2px solid black; 
+                border-radius: 11px;
+                color: black;
+                font-weight: bold;
+                font-size: 16pt;
+                background-color: #FFFF99;  /* 노랑 */
+            }
+            QPushButton:hover {
+                background-color: #FFFFCC;  /* 조금 더 연한 노랑 */
+            }
+            QPushButton:pressed {
+                background-color: #FFD700;  /* 진한 노랑 */
+            }
+        """)
         layout.addWidget(self.btn2)
 
         self.btn3 = QPushButton("출결 관리")
         self.btn3.clicked.connect(self.montable)
+        self.btn3.setStyleSheet("""
+            QPushButton {
+                border: 2px solid black; 
+                border-radius: 11px;
+                color: black;
+                font-weight: bold;
+                font-size: 16pt;
+                background-color: #87CEFA;  /* 하늘 */
+            }
+             QPushButton:hover {
+                background-color: #B0E0FF;  /* 연하늘 */
+            }
+            QPushButton:pressed {
+                background-color: #4682B4;  /* 진한 하늘 */
+            }
+        """)
         layout.addWidget(self.btn3)
 
         # 테이블 위젯
@@ -55,8 +105,6 @@ class Window(QMainWindow):
         # 데이터 로드
         self.load_timetable()
 
-#-----------------------------------------------------------------#
-#-----------------------------------------------------------------#
     def stumain(self):
         self.ins = SWindow()
         self.ins.show()

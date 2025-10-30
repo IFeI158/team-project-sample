@@ -2,6 +2,7 @@ import calendar
 from datetime import datetime
 import pymysql
 from PyQt5.QtWidgets import QPushButton, QTableWidget, QTableWidgetItem, QWidget, QVBoxLayout, QMessageBox
+from PyQt5.QtGui import *
 
 # --------------------------
 # MySQL 연결
@@ -87,6 +88,7 @@ class AttendanceTable(QWidget):
         super().__init__()
         self.setWindowTitle(f"Attendance Table - {now.year}년 {now.month}월")
         self.resize(1200, 600)
+        self.setWindowIcon(QIcon("cal.png"))
 
         layout = QVBoxLayout()
         self.table = QTableWidget()

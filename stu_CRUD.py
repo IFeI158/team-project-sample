@@ -4,6 +4,7 @@ from stu_connect import DB, config
 from month_table import sync_add_student, sync_update_student
 import traceback
 import unicodedata
+from PyQt5.QtGui import *
 
 
 class Ins_lists(QMainWindow):
@@ -13,6 +14,7 @@ class Ins_lists(QMainWindow):
         super().__init__()
         self.db = DB(**config)
         self.setWindowTitle("학생 추가")
+        self.setWindowIcon(QIcon("stu.png"))
 
         central = QWidget()
         self.setCentralWidget(central)
@@ -66,6 +68,7 @@ class Upd_lists(QMainWindow):
         super().__init__()
         self.db = DB(**config)
         self.setWindowTitle("학생 정보 수정")
+        self.setWindowIcon(QIcon("stu.png"))
 
         central = QWidget()
         self.setCentralWidget(central)
@@ -143,6 +146,7 @@ class Dlt_lists(QMainWindow):
     def __init__(self):
         super().__init__()
         self.db = DB(**config)
+        self.setWindowIcon(QIcon("stu.png"))
 
         self.setWindowTitle("학생 제거")
 

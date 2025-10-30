@@ -1,12 +1,14 @@
 from PyQt5.QtWidgets import *
 from stu_connect import DB, config
 from stu_CRUD import Ins_lists, Upd_lists, Dlt_lists
+from PyQt5.QtGui import *
 
 
 class SWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("학생 관리")
+        self.setWindowIcon(QIcon("stu.png"))
         self.db = DB(**config)
 
         central = QWidget()
