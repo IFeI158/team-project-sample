@@ -3,6 +3,16 @@ from PyQt5.QtWidgets import *
 from stu_main import *
 from month_table import *
 from time_table import TimetableApp
+import subprocess
+import os
+
+def run_linked_well_task():
+    script_path = os.path.join(os.getcwd(), "linked_well.py")
+    try:
+        subprocess.Popen([sys.executable, script_path])  # ✅ run → Popen으로 변경
+        print(f"[실행 중] {script_path}")
+    except Exception as e:
+        print(f"❌ linked_well.py 실행 오류: {e}")
 
 class Window(QMainWindow):
     def __init__(self):
@@ -61,6 +71,7 @@ class Window(QMainWindow):
 
 
 if __name__ == "__main__":  # 실행 환경이 해당 파일(모듈로 import되지 않은 '__main__')이면 실행
+    run_linked_well_task()
     app = QApplication(sys.argv)
     myWindow = Window()
     myWindow.show()
