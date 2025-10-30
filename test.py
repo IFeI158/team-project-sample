@@ -3,7 +3,7 @@ import mysql.connector
 config = dict(
     host='localhost',
     user='root',
-    password='000630',
+    password='123',
     database='attenddb',
     charset='utf8'
 )
