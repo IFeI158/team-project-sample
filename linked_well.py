@@ -1,15 +1,17 @@
 import time
 import mysql.connector
-from datetime import datetime
+from datetime import datetime, timedelta
 import subprocess
 import os
 import sys
+
 from month_table import move_daily_to_month
 
-# teacher_puls_1_2.py 실행 함수
+# 중복 방지용
+last_executed_times = set()
+
 def run_teacher_puls_1_2_task():
     script_path = os.path.join(os.getcwd(), "teacher_puls_1_2.py")
-    
     try:
         subprocess.run([sys.executable, script_path])
         print(f"[실행 완료] {script_path}")
@@ -18,7 +20,6 @@ def run_teacher_puls_1_2_task():
 
 def bell_on():
     script_path = os.path.join(os.getcwd(), "bellon.py")
-    
     try:
         subprocess.run([sys.executable, script_path])
         print(f"[실행 완료] {script_path}")
@@ -26,7 +27,6 @@ def bell_on():
         print(f"❌ bellon.py 실행 오류: {e}")
 
 def timedelta_to_str(td):
-    """datetime.timedelta → 'HH:MM' 문자열로 변환"""
     if not td:
         return None
     total_seconds = int(td.total_seconds())
@@ -34,14 +34,13 @@ def timedelta_to_str(td):
     minutes = (total_seconds % 3600) // 60
     return f"{hours:02d}:{minutes:02d}"
 
-
-# DB 스케줄 확인 함수
 def check_schedule_and_run():
+    global last_executed_times
     try:
         conn = mysql.connector.connect(
             host='localhost',
             user='root',
-            password='123',  # ← DB 비밀번호
+            password='123',
             database='attenddb'
         )
         cursor = conn.cursor()
@@ -54,9 +53,7 @@ def check_schedule_and_run():
     cursor.execute("""
         SELECT start_time, end_time, period 
         FROM timetable
-        WHERE start_time = %s OR end_time = %s
-    """, (now, now))
-
+    """)
     rows = cursor.fetchall()
 
     for row in rows:
@@ -64,18 +61,21 @@ def check_schedule_and_run():
         end_time   = timedelta_to_str(row[1])
         current_period = row[2]
 
-        print(f"[DEBUG] 비교 → now={now}, start={start_time}, end={end_time}")
+        # 디버깅용
+        print(f"[DEBUG] now={now}, start={start_time}, end={end_time}")
 
-        if now == start_time:
+        # 중복 방지 로직
+        if now == start_time and f"start_{current_period}_{now}" not in last_executed_times:
             print(f"⏰ {now} → teacher_puls_1_2.py 실행")
             run_teacher_puls_1_2_task()
+            last_executed_times.add(f"start_{current_period}_{now}")
 
-        if now == end_time:
+        if now == end_time and f"end_{current_period}_{now}" not in last_executed_times:
             print(f"⏰ {now} → 종소리 울려라")
             bell_on()
+            last_executed_times.add(f"end_{current_period}_{now}")
 
-
-            # 마지막 교시인지 판단
+            # 마지막 교시 확인
             cursor.execute("SELECT MAX(period) FROM timetable")
             last_period = cursor.fetchone()[0]
 
@@ -84,13 +84,11 @@ def check_schedule_and_run():
                 move_daily_to_month(1)
                 print("시스템 정산 완료")
 
-
-
     cursor.close()
     conn.close()
 
-# 메인 루프 (1분마다 체크)
-print("⏳ 자동 실행 스케줄러 시작... (60초 간격 체크)")
+
+print("⏳ 자동 실행 스케줄러 시작... (10초 간격 체크)")
 while True:
     check_schedule_and_run()
     time.sleep(10)
