@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout,
     QLabel, QSpinBox, QPushButton, QTableWidget, QTimeEdit, QMessageBox
 )
-from PyQt5.QtCore import QTime, QDateTime
+from PyQt5.QtCore import QTime, QDateTime, pyqtSignal
 import pymysql
 
 # DB 접속 정보
@@ -17,11 +17,12 @@ config = dict(
 )
 
 class TimetableApp(QWidget):
+    updated = pyqtSignal()
+
     def __init__(self):
         super().__init__()
         self.setWindowTitle("일일 시간표 관리")
         self.resize(400, 500)
-
         self.layout = QVBoxLayout(self)
 
         # 교시 선택
@@ -106,6 +107,7 @@ class TimetableApp(QWidget):
                 )
             conn.commit()
             QMessageBox.information(self, "저장 완료", "DB에 저장되었습니다.")
+            self.updated.emit()
 
         except Exception as e:
             QMessageBox.critical(self, "DB 오류", f"저장 중 오류 발생:\n{e}")

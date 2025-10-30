@@ -3,8 +3,17 @@ from PyQt5.QtWidgets import *
 from stu_main import *
 from month_table import *
 from time_table import TimetableApp
+from PyQt5.QtCore import QTime, QDateTime, pyqtSignal
 import subprocess
 import os
+
+config = dict(
+    host='localhost',
+    user='root',
+    password='123',
+    database='attenddb',
+    charset='utf8'
+)
 
 def run_linked_well_task():
     script_path = os.path.join(os.getcwd(), "linked_well.py")
@@ -17,23 +26,37 @@ def run_linked_well_task():
 class Window(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.db = DB(**config)
+        self.setGeometry(300, 300, 340, 400)
         self.setWindowTitle("관리자 모드")
         self.timetable_window = None
-
+        
+        #  메인 위젯 & 레이아웃
         central = QWidget()
         self.setCentralWidget(central)
         layout = QVBoxLayout(central)
+
+        #  버튼
         self.btn1 = QPushButton("시간표 관리")
         self.btn1.clicked.connect(self.open_timetable)
         layout.addWidget(self.btn1)
+
         self.btn2 = QPushButton("학생 관리")
         self.btn2.clicked.connect(self.stumain)
         layout.addWidget(self.btn2)
+
         self.btn3 = QPushButton("출결 관리")
         self.btn3.clicked.connect(self.montable)
         layout.addWidget(self.btn3)
 
+        # 테이블 위젯
+        self.table = QTableWidget()
+        layout.addWidget(self.table)
+
+        # 데이터 로드
+        self.load_timetable()
+
+#-----------------------------------------------------------------#
+#-----------------------------------------------------------------#
     def stumain(self):
         self.ins = SWindow()
         self.ins.show()
@@ -47,9 +70,37 @@ class Window(QMainWindow):
     def open_timetable(self):
         if self.timetable_window is None:
             self.timetable_window = TimetableApp()
+            self.timetable_window.updated.connect(self.load_timetable)
         self.timetable_window.show()
         self.timetable_window.raise_()
         self.timetable_window.activateWindow()
+    
+    def load_timetable(self):
+        conn = pymysql.connect(**config)
+        cursor = conn.cursor()
+
+        query = "SELECT * FROM timetable"  # 테이블 전체 출력
+        cursor.execute(query)
+        data = cursor.fetchall()
+
+        # 컬럼명 읽기
+        columns = [desc[0] for desc in cursor.description]
+
+        self.table.setRowCount(len(data))
+        self.table.setColumnCount(len(columns))
+        self.table.setHorizontalHeaderLabels(columns)
+        self.table.setEditTriggers(QTableWidget.NoEditTriggers)
+
+        # 데이터 테이블에 넣기
+        for row_idx, row_data in enumerate(data):
+            for col_idx, value in enumerate(row_data):
+                self.table.setItem(row_idx, col_idx, QTableWidgetItem(str(value)))
+
+        cursor.close()
+        conn.close()
+
+
+
     
 
 # 메인 기능
