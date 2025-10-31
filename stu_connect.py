@@ -1,10 +1,9 @@
 import pymysql
-from month_table import sync_delete_student
 
 config = dict(
     host = 'localhost',
     user = 'root',
-    password = '123',
+    password = '000630',
     database = 'attenddb',
     charset = 'utf8'
 )
@@ -96,29 +95,4 @@ class DB:
             except Exception as e:
                 print("오류 코드>", e)
                 con.rollback()
-                return False
-
-    def delete_list(self, id_or_hotspot):
-        sql_id = "DELETE FROM dailytb WHERE id=%s"
-        sql_id_to_hotspot = "SELECT hotspot FROM dailytb WHERE id=%s"
-        sql_hotspot = "DELETE FROM dailytb WHERE hotspot=%s"
-
-        with self.connect() as con:
-            try:
-                with con.cursor() as cur:
-                    if id_or_hotspot.isdigit():
-                        cur.execute(sql_id_to_hotspot, (int(id_or_hotspot),))
-                        hotspot_from_id = cur.fetchone()
-                        if hotspot_from_id:
-                            hotspot_from_id = hotspot_from_id[0]
-                            sync_delete_student(hotspot_from_id)
-                        cur.execute(sql_id, (int(id_or_hotspot),))
-                    else:
-                        cur.execute(sql_hotspot, (id_or_hotspot,))
-                        sync_delete_student(id_or_hotspot)
-                    con.commit()
-                    return True
-            except Exception as e:
-                con.rollback()
-                print("삭제 오류:", e)
                 return False

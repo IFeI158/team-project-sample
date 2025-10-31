@@ -1,19 +1,11 @@
 import calendar
 from datetime import datetime
-import pymysql
 from PyQt5.QtWidgets import QPushButton, QTableWidget, QTableWidgetItem, QWidget, QVBoxLayout, QMessageBox
 from PyQt5.QtGui import *
+from stu_connect import DB, config
 
-# --------------------------
-# MySQL 연결
-# --------------------------
-conn = pymysql.connect(
-    host='localhost',
-    user='root',
-    password='123',
-    database='attenddb',
-    charset='utf8mb4'
-)
+db = DB(**config)
+conn = db.connect()
 cursor = conn.cursor()
 
 # --------------------------
@@ -30,7 +22,7 @@ _, last_day = calendar.monthrange(year, month)
 # --------------------------
 
 def sync_add_student(name, hotspot):
-    """새 학생 추가 시 monthtb에도 반영"""
+    # 새 학생 추가 시 monthtb에도 반영
     for day in range(1, last_day + 1):
         weekday = datetime(year, month, day).weekday()
         if weekday < 5:
@@ -42,7 +34,7 @@ def sync_add_student(name, hotspot):
 
 
 def sync_delete_student(hotspot):
-    """학생 삭제 시 monthtb에서도 제거"""
+    # 학생 삭제 시 monthtb에서도 제거
     cursor.execute("DELETE FROM monthtb WHERE hotspot_name = %s", (hotspot,))
     conn.commit()
 

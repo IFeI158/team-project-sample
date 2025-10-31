@@ -2,7 +2,11 @@ import serial
 import time
 import threading
 import re
-import pymysql
+from stu_connect import DB, config
+
+db = DB(**config)
+conn = db.connect()
+cursor = conn.cursor()
 
 read_data = ""
 
@@ -30,15 +34,6 @@ except:
 my_thread = threading.Thread(target=thread_task)
 my_thread.daemon = True
 my_thread.start()
-
-
-conn = pymysql.connect(
-    host='localhost',
-    user='root',
-    password='123', # ← 실제 비밀번호로 변경
-    database='attenddb'    # ← 실제 DB 이름으로 변경
-)
-cursor = conn.cursor()
 
 read_data = ""
 ser.write('AT+CWLAP\r\n'.encode('utf-8'))

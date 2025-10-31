@@ -1,21 +1,17 @@
 # time_table.py - 안정화 버전
-import sys
 from PyQt5.QtWidgets import (
-    QApplication, QWidget, QVBoxLayout, QHBoxLayout,
+    QWidget, QVBoxLayout, QHBoxLayout,
     QLabel, QSpinBox, QPushButton, QTableWidget, QTimeEdit, QMessageBox
 )
 from PyQt5.QtCore import QTime, QDateTime, pyqtSignal
 import pymysql
 from PyQt5.QtGui import *
+from stu_connect import DB, config
 
 # DB 접속 정보
-config = dict(
-    host='localhost',
-    user='root',
-    password='123',
-    database='attenddb',
-    charset='utf8'
-)
+db = DB(**config)
+conn = db.connect()
+cursor = conn.cursor()
 
 class TimetableApp(QWidget):
     updated = pyqtSignal()
@@ -114,18 +110,23 @@ class TimetableApp(QWidget):
 
                 times.append((r+1, start_time, end_time))
 
-            # 교시 간 시간 겹침 검사
-            for i in range(len(times) - 1):
-                prev_period, prev_start, prev_end = times[i]
-                next_period, next_start, next_end = times[i+1]
+            # 모든 교시 쌍 비교하여 겹침 검사
+            for i in range(len(times)):
+                period_i, start_i, end_i = times[i]
+                for j in range(i+1, len(times)):
+                    period_j, start_j, end_j = times[j]
 
-                if prev_end == next_start:
-                    QMessageBox.warning(self, "시간 겹침 오류", f"{prev_period}교시 종료 시간과 {next_period}교시 시작 시간이 같습니다.")
-                    return
+                    # 시작 시간이 같으면 오류
+                    if start_i == start_j:
+                        QMessageBox.warning(self, "시작 시간 중복 오류",
+                                            f"{period_i}교시와 {period_j}교시의 시작 시간이 같습니다.")
+                        return
 
-                if prev_start == next_start:
-                    QMessageBox.warning(self, "시작 시간 중복 오류", f"{prev_period}교시와 {next_period}교시의 시작 시간이 같습니다.")
-                    return
+                    # 시간 겹침 검사
+                    if (start_i < end_j and end_i > start_j):
+                        QMessageBox.warning(self, "시간 겹침 오류",
+                                            f"{period_i}교시와 {period_j}교시의 시간이 겹칩니다.")
+                        return
 
             # DB에 저장
             for period, start, end in times:
@@ -146,5 +147,6 @@ class TimetableApp(QWidget):
                     conn.close()
                 except:
                     pass
+
 
 

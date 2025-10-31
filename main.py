@@ -8,14 +8,6 @@ from PyQt5.QtGui import *
 import subprocess
 import os
 
-config = dict(
-    host='localhost',
-    user='root',
-    password='123',
-    database='attenddb',
-    charset='utf8'
-)
-
 def run_linked_well_task():
     script_path = os.path.join(os.getcwd(), "linked_well.py")
     try:
@@ -124,9 +116,9 @@ class Window(QMainWindow):
         self.timetable_window.activateWindow()
     
     def load_timetable(self):
-        conn = pymysql.connect(**config)
+        db = DB(**config)
+        conn = db.connect()
         cursor = conn.cursor()
-
         query = "SELECT * FROM timetable"  # 테이블 전체 출력
         cursor.execute(query)
         data = cursor.fetchall()

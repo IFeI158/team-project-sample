@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import pyqtSignal
 from stu_connect import DB, config
-from month_table import sync_add_student, sync_update_student
+from month_table import sync_add_student, sync_update_student, sync_delete_student
 import traceback
 import unicodedata
 from PyQt5.QtGui import *
@@ -87,7 +87,15 @@ class Upd_lists(QMainWindow):
         self.btn_yes.clicked.connect(self.upd_lists)
         v_box.addWidget(self.btn_yes)
 
-    def update_list(self, id, name=None, hotspot=None):
+    def upd_lists(self):
+        id = self.code.text().strip()
+        name = self.name.text().strip()
+        hotspot = self.hotspot.text().strip()
+
+        if not id:
+            QMessageBox.warning(self, "오류", "ID를 입력해야 합니다.")
+            return
+
         sql_first = "UPDATE dailytb SET "
         sql_last = " WHERE id=%s"
 
@@ -103,42 +111,45 @@ class Upd_lists(QMainWindow):
             values.append(hotspot)
 
         if not set_clauses:
-            return False
+            QMessageBox.warning(self, "오류", "변경할 값을 입력하세요.")
+            return
 
         sql = sql_first + ", ".join(set_clauses) + sql_last
         values.append(id)
 
-        with self.connect() as con:
-            try:
-                with con.cursor() as cur:
-                    # 기존 hotspot 가져오기
-                    cur.execute("SELECT hotspot FROM dailytb WHERE id=%s", (id,))
-                    old_hotspot = cur.fetchone()
-                    if old_hotspot:
-                        old_hotspot = old_hotspot[0]
-                    else:
-                        return False  # id 존재하지 않음
+        con = self.db.connect()  # ✅ 수정된 부분
+        try:
+            with con.cursor() as cur:
+                cur.execute("SELECT hotspot FROM dailytb WHERE id=%s", (id,))
+                old_hotspot = cur.fetchone()
+                if not old_hotspot:
+                    QMessageBox.warning(self, "오류", "해당 ID가 존재하지 않습니다.")
+                    return
+                old_hotspot = old_hotspot[0]
 
-                    cur.execute(sql, values)
-                    affected = cur.rowcount
+                cur.execute(sql, values)
+                affected = cur.rowcount
 
-                    if affected > 0:
-                        # monthtb 동기화
-                        sync_update_student(
-                            old_hotspot,
-                            name if name else "", 
-                            hotspot if hotspot else old_hotspot
-                        )
-                    else:
-                        con.rollback()
-                        return False
-
+                if affected > 0:
+                    sync_update_student(
+                        old_hotspot,
+                        name if name else "",
+                        hotspot if hotspot else old_hotspot
+                    )
                     con.commit()
-                    return True
-            except Exception as e:
-                print("오류 코드>", e)
-                con.rollback()
-                return False
+                    QMessageBox.information(self, "완료", "수정이 완료되었습니다.")
+                    self.data_changed_u.emit()
+                    self.close()
+                else:
+                    con.rollback()
+                    QMessageBox.warning(self, "실패", "수정된 데이터가 없습니다.")
+        except Exception as e:
+            con.rollback()
+            QMessageBox.critical(self, "오류", f"수정 중 오류 발생:\n{e}")
+            traceback.print_exc()
+        finally:
+            con.close()
+
             
 class Dlt_lists(QMainWindow):
     data_changed_d = pyqtSignal()  # ✅ 부모창에 보낼 신호
@@ -173,7 +184,7 @@ class Dlt_lists(QMainWindow):
         try:
             ok = self.db.verify_list(id_or_hotspot, id_or_hotspot)
             if ok:
-                identify = self.db.delete_list(id_or_hotspot)
+                identify = self.delete_list(id_or_hotspot)
                 if identify:
                     QMessageBox.information(self, "완료", "제거되었습니다.")
                     self.data_changed_d.emit()  # ✅ 부모창에 즉시 신호
@@ -186,3 +197,32 @@ class Dlt_lists(QMainWindow):
         except Exception as e:
             QMessageBox.critical(self, "오류", f"학생 추가 중 오류 발생:\n{e}")
             traceback.print_exc()
+
+    def delete_list(self, id_or_hotspot):
+        sql_id = "DELETE FROM dailytb WHERE id=%s"
+        sql_id_to_hotspot = "SELECT hotspot FROM dailytb WHERE id=%s"
+        sql_hotspot = "DELETE FROM dailytb WHERE hotspot=%s"
+
+        db = DB(**config)  # ✅ DB 객체 생성
+        con = db.connect()  # ✅ 커넥션 획득
+
+        try:
+            with con.cursor() as cur:
+                if id_or_hotspot.isdigit():
+                    cur.execute(sql_id_to_hotspot, (int(id_or_hotspot),))
+                    hotspot_from_id = cur.fetchone()
+                    if hotspot_from_id:
+                        hotspot_from_id = hotspot_from_id[0]
+                        sync_delete_student(hotspot_from_id)
+                    cur.execute(sql_id, (int(id_or_hotspot),))
+                else:
+                    cur.execute(sql_hotspot, (id_or_hotspot,))
+                    sync_delete_student(id_or_hotspot)
+                con.commit()
+                return True
+        except Exception as e:
+            con.rollback()
+            print("삭제 오류:", e)
+            return False
+        finally:
+            con.close()  # ✅ 연결 닫기
