@@ -131,11 +131,7 @@ class Upd_lists(QMainWindow):
                 affected = cur.rowcount
 
                 if affected > 0:
-                    sync_update_student(
-                        old_hotspot,
-                        name if name else "",
-                        hotspot if hotspot else old_hotspot
-                    )
+                    sync_update_student(old_hotspot, name, hotspot)
                     con.commit()
                     QMessageBox.information(self, "완료", "수정이 완료되었습니다.")
                     self.data_changed_u.emit()

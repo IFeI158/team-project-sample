@@ -1,5 +1,5 @@
 import time
-from datetime import datetime, timedelta
+from datetime import datetime
 import subprocess
 import os
 import sys
@@ -75,7 +75,7 @@ def check_schedule_and_run():
 
                 if current_period == last_period:
                     print("마지막 교시가 끝났습니다. 집으로 가세요! 😆\n시스템 정산 시작 ...")
-                    move_daily_to_month(1)
+                    move_daily_to_month(datetime.today().day)
                     print("시스템 정산 완료")
                     sys.exit()
 

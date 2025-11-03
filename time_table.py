@@ -110,20 +110,17 @@ class TimetableApp(QWidget):
 
                 times.append((r+1, start_time, end_time))
 
-            # 모든 교시 쌍 비교하여 겹침 검사
+            # 모든 교시 쌍 비교
             for i in range(len(times)):
                 period_i, start_i, end_i = times[i]
                 for j in range(i+1, len(times)):
                     period_j, start_j, end_j = times[j]
 
-                    # 시작 시간이 같으면 오류
-                    if start_i == start_j:
-                        QMessageBox.warning(self, "시작 시간 중복 오류",
-                                            f"{period_i}교시와 {period_j}교시의 시작 시간이 같습니다.")
-                        return
+                    # 교시 순서를 보장하기 위해 start_i <= start_j로 정렬 후 비교
+                    if start_i > start_j:
+                        start_i, end_i, start_j, end_j = start_j, end_j, start_i, end_i
 
-                    # 시간 겹침 검사
-                    if (start_i < end_j and end_i > start_j):
+                    if start_j < end_i:
                         QMessageBox.warning(self, "시간 겹침 오류",
                                             f"{period_i}교시와 {period_j}교시의 시간이 겹칩니다.")
                         return

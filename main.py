@@ -3,7 +3,6 @@ from PyQt5.QtWidgets import *
 from stu_main import *
 from month_table import *
 from time_table import TimetableApp
-from PyQt5.QtCore import QTime, QDateTime, pyqtSignal
 from PyQt5.QtGui import *
 import subprocess
 import os
@@ -19,7 +18,7 @@ def run_linked_well_task():
 class Window(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setGeometry(300, 300, 340, 370)
+        self.setGeometry(300, 300, 340, 400)
         self.setWindowTitle("관리자 모드")
         self.setWindowIcon(QIcon("tik.png"))
         self.timetable_window = None
@@ -102,8 +101,6 @@ class Window(QMainWindow):
         self.ins.show()
 
     def montable(self):
-        # init_monthtb()           # 월 초기화
-        # move_daily_to_month(1)   # 예시: 오늘(10월 29일) 점수 전송
         self.ins = AttendanceTable()
         self.ins.show()
     

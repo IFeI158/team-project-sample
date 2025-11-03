@@ -39,12 +39,23 @@ def sync_delete_student(hotspot):
     conn.commit()
 
 
-def sync_update_student(old_hotspot, new_name, new_hotspot):
+def sync_update_student(old_hotspot, new_name=None, new_hotspot=None):
+    # 기존 데이터 가져오기
+    cursor.execute("SELECT name, hotspot_name FROM monthtb WHERE hotspot_name=%s", (old_hotspot,))
+    row = cursor.fetchone()
+    if not row:
+        return
+    current_name, current_hotspot = row
+
+    # 공란이면 기존 값 유지
+    final_name = new_name if new_name else current_name
+    final_hotspot = new_hotspot if new_hotspot else current_hotspot
+
     cursor.execute("""
         UPDATE monthtb
-        SET name = %s, hotspot_name = %s
-        WHERE hotspot_name = %s
-    """, (new_name, new_hotspot, old_hotspot))
+        SET name=%s, hotspot_name=%s
+        WHERE hotspot_name=%s
+    """, (final_name, final_hotspot, old_hotspot))
     conn.commit()
 
 
@@ -55,7 +66,7 @@ def move_daily_to_month(today_day):
     cursor.execute("SELECT name, hotspot, daily_score FROM dailytb")
     for name, hotspot_name, daily_score in cursor.fetchall():
         if 0 <= daily_score <= 3:
-            converted_score = 1
+            converted_score = 0
         elif 4 <= daily_score < 7:
             converted_score = 2
         else:
@@ -86,7 +97,7 @@ class AttendanceTable(QWidget):
         self.table = QTableWidget()
         layout.addWidget(self.table)
         self.setLayout(layout)
-        self.btn_init = QPushButton("월 전체 초기화")
+        self.btn_init = QPushButton("보드 초기화 및 최종 정산")
         self.btn_init.clicked.connect(self.init_monthtb)
         layout.addWidget(self.btn_init)
 
@@ -125,7 +136,59 @@ class AttendanceTable(QWidget):
     # monthtb 초기화 (새 달)
     # --------------------------
     def init_monthtb(self):
-        """새로운 달이 시작될 때만 호출. 기존 데이터 전체 초기화."""
+        # 월 전체 초기화 + historyDB 백업
+
+        # --------------------------
+        # historyDB 연결
+        # --------------------------
+        cursor.execute("""
+            CREATE DATABASE IF NOT EXISTS historyDB
+            DEFAULT CHARACTER SET utf8mb4
+            COLLATE utf8mb4_unicode_ci;
+        """)
+        cursor.execute("USE historyDB;")
+
+        hist_table_name = f"{year}_{month:02d}"  # ex) 2025_10
+        cursor.execute(f"""
+            CREATE TABLE IF NOT EXISTS {hist_table_name} (
+                name VARCHAR(50),
+                hotspot_name VARCHAR(50),
+                month_total INT,
+                status VARCHAR(10),
+                PRIMARY KEY (hotspot_name)
+            );
+        """)
+
+        # --------------------------
+        # attenddb에서 monthtb 가져와 백업
+        # --------------------------
+        cursor.execute("USE attenddb;")
+        cursor.execute("SELECT name, hotspot_name, month_total FROM monthtb")
+
+        # ✅ 이번 달 실제 평일 수 계산
+        weekday_count = sum(
+            1 for day in range(1, last_day + 1)
+            if datetime(year, month, day).weekday() < 5
+        )
+
+        # ✅ 평일 수 기준 통과 커트라인
+        passing_score = weekday_count * 3 * 4 / 5
+
+        # ✅ historyDB에 데이터 백업 + 통과/탈락 계산
+        for name, hotspot_name, month_total in cursor.fetchall():
+            status = "통과" if month_total >= passing_score else "탈락"
+
+            cursor.execute(f"""
+                REPLACE INTO historyDB.{hist_table_name}
+                (name, hotspot_name, month_total, status)
+                VALUES (%s, %s, %s, %s)
+            """, (name, hotspot_name, month_total, status))
+
+        conn.commit()
+
+        # --------------------------
+        # monthtb 초기화 (새 달 준비)
+        # --------------------------
         cursor.execute("DELETE FROM monthtb;")
 
         for day in range(1, last_day + 1):
@@ -138,5 +201,6 @@ class AttendanceTable(QWidget):
                         VALUES (%s, %s, %s, 0, 0)
                     """, (day, hotspot_name, name))
         conn.commit()
-        QMessageBox.information(self, "완료", "초기화되었습니다.")
+
+        QMessageBox.information(self, "완료", f"이번 달({month}월) 데이터 초기화 및 백업 완료.")
         self.load_data()

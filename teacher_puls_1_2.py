@@ -9,41 +9,44 @@ conn = db.connect()
 cursor = conn.cursor()
 
 read_data = ""
+stop_thread = False  # 종료 플래그
 
 def thread_task():
     global read_data
-    while True:
+    while not stop_thread:
         try:
-            local_data = ser.readline()
-            if local_data:
-                decoded = local_data.decode('utf-8', errors='ignore')
-                read_data += decoded
-                
+            if ser and ser.is_open:
+                local_data = ser.readline()
+                if local_data:
+                    decoded = local_data.decode('utf-8', errors='ignore')
+                    read_data += decoded
+            else:
+                break
         except Exception as e:
-            print("⚠️ 디코딩 오류:", e)
+            # 포트 닫힘 이후 발생하는 오류는 무시
+            if "port that is not open" not in str(e):
+                print("⚠️ 디코딩 오류:", e)
+            break  # 스레드 종료
 
 try:
-    ser = serial.Serial('COM5', 9600, timeout=2) #포트 확인
+    ser = serial.Serial('COM5', 9600, timeout=2)
     time.sleep(2)
-    
-except:
-    print("❌ 시리얼 포트 연결 실패")
+except Exception as e:
+    print("❌ 시리얼 포트 연결 실패:", e)
     exit()
 
-
 my_thread = threading.Thread(target=thread_task)
-my_thread.daemon = True
 my_thread.start()
 
+# --- 메인 로직 ---
 read_data = ""
-ser.write('AT+CWLAP\r\n'.encode('utf-8'))
+ser.write(b'AT+CWLAP\r\n')
 print("AT+CWLAP 명령 전송됨")
-time.sleep(3)
+time.sleep(5)
 
 ssids = re.findall(r'\+CWLAP:\(\d+,"(.*?)"', read_data)
 
 for ssid in ssids:
-    
     cursor.execute("SELECT id FROM dailytb WHERE hotspot = %s", (ssid,))
     result = cursor.fetchone()
 
@@ -59,7 +62,12 @@ ser.write(b'stop\n')
 print("stop 명령 전송됨")
 time.sleep(2)
 
+# --- 안전 종료 ---
+stop_thread = True
+time.sleep(0.5)
+if ser.is_open:
+    ser.close()
+
 cursor.close()
 conn.close()
-ser.close()
 print("✅ 모든 작업 완료")

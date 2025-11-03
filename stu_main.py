@@ -21,9 +21,8 @@ class SWindow(QMainWindow):
         self.searchbar.returnPressed.connect(self.search)
         form_box.addWidget(self.searchbar)
 
-        # self.btn_upd = QPushButton("학생 수정")
-        # self.btn_upd.clicked.connect(self.upd_btn)
-        # form_box.addWidget(self.btn_upd)
+        self.btn_upd = QPushButton("학생 수정")
+        self.btn_upd.clicked.connect(self.upd_btn)
 
         small_vbox = QVBoxLayout()
         self.btn_add = QPushButton("학생 추가")
@@ -32,6 +31,7 @@ class SWindow(QMainWindow):
         self.btn_dlt.clicked.connect(self.dlt_btn)
         small_vbox.addWidget(self.btn_add)
         small_vbox.addWidget(self.btn_dlt)
+        small_vbox.addWidget(self.btn_upd)
         form_box.addLayout(small_vbox)
 
         self.table = QTableWidget()
@@ -93,9 +93,3 @@ class SWindow(QMainWindow):
         self.dlt = Dlt_lists()
         self.dlt.data_changed_d.connect(self.load_lists)  # ✅ 신호 연결
         self.dlt.show()
-
-# if __name__ == "stu_main":
-#    app = QApplication(sys.argv)
-#    myWindow = SWindow()
-#    myWindow.show()
-#    app.exec_()
